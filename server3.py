@@ -15,13 +15,26 @@ def main():
 	socket.connect("tcp://localhost:5555")
 
 	socket.send_multipart([b"newServer", bytes(serverAdd, "ascii")])
-	m = socket.recv()
-	print(m)
+	msg = socket.recv()
+	print(msg)
 
+	while True:
+		if int(msg) == 0:
+			print("Waiting.....")
+			operation, *rest = socket.recv_multipart()
+			if operation == b"calculate":
+				nFilas2, filename, name, nFilas = rest
+				
+				f = open("folder/{}".format(name))
+				data = f.read().strip()
+				f.close()
+					
+				A = [[int(num) for num in line.strip().split()] for line in data.split('\n')]
+				print (A)
 
-	#while True:
-	#	msg = socket.recv_multipart()
-	#	print(msg)
+			else:
+				print("Unsupported operation")
+			socket.send(b"ok")	
 
 if __name__ == '__main__':
 	main()
